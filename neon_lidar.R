@@ -69,15 +69,20 @@ algo2 <- dalponte2016(chm_p2r_05_smoothed, ttops_chm_p2r_05_smoothed2)
 tlas2 <- segment_trees(nlas, algo2) # segment point cloud
 plot(tlas2, bg = "white", size = 2, color = "treeID") # visualize trees
 
-# Point-to-raster 2 resolutions
-chm_p2r_05 <- rasterize_canopy(las, 0.5, p2r(subcircle = 0.2), pkg = "terra")
-chm_p2r_1 <- rasterize_canopy(las, 1, p2r(subcircle = 0.2), pkg = "terra")
 
-# Pitfree with and without subcircle tweak
-chm_pitfree_05_1 <- rasterize_canopy(las, 0.5, pitfree(), pkg = "terra")
-chm_pitfree_05_2 <- rasterize_canopy(las, 0.5, pitfree(subcircle = 0.2), pkg = "terra")
+x <- plot(nlas, size = 4, bg = "white")
+add_treetops3d(x, ttops)
 
-# Post-processing median filter
-kernel <- matrix(1,3,3)
-chm_p2r_05_smoothed <- terra::focal(chm_p2r_05, w = kernel, fun = median, na.rm = TRUE)
-chm_p2r_1_smoothed <- terra::focal(chm_p2r_1, w = kernel, fun = median, na.rm = TRUE)
+tclip <- clip_rectangle(tlas2, 313400,4875000,313800,4875600)
+plot(tclip, bg = "white", size = 2, color = "treeID") # visualize trees
+unique(tclip$treeID)
+
+tree <- filter_poi(tclip, treeID == 555)
+plot(tree, bg = "white", size = 4) # visualize trees
+
+tree <- filter_poi(tclip, treeID >= 506, treeID <= 600)
+plot(tree, bg = "white", size = 2, color ="RGB") # visualize trees
+
+nclip <- clip_rectangle(nlas, 313400,4875000,313800,4875600)
+
+plot(nclip, size = 2, bg = "white", color="RGB")
