@@ -1,6 +1,4 @@
 install.packages(c("ggplot2","dplyr","lubridate"))
-install.packages("forestr")
-library(forestr)
 install.packages("lidR")
 library(lidR)
 library(future)
@@ -17,6 +15,8 @@ hist(las@data$Z)
 
 plot(l1, color="RGB", bg="white")
 plot(las, color="RGB", bg="white")
+
+
 
 
 
@@ -86,3 +86,19 @@ plot(tree, bg = "white", size = 2, color ="RGB") # visualize trees
 nclip <- clip_rectangle(nlas, 313400,4875000,313800,4875600)
 
 plot(nclip, size = 2, bg = "white", color="RGB")
+
+
+
+### forest metrics
+install.packages("treetop")
+
+
+library(treetop)
+launchApp(launch.browser = TRUE)
+library(terra)
+writeRaster(chm_p2r_05_smoothed, "C:/Users/hkropp/Documents/Lidar/Forest_neon/BART_DP1_313000_4875000_CHM.tif")
+
+launchApp(launch.browser = TRUE)
+
+
+library(gapfraction)

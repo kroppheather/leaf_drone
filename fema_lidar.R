@@ -1,0 +1,2 @@
+library(lidR)
+library(future)
