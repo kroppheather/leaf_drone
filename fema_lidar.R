@@ -69,6 +69,9 @@ plot(treeRG01, bg = "white", size = 2, color = "treeID")
 
 writeRaster(chmRG01, "C:/Users/hkropp/Documents/Lidar/RG01_CHM.tif")
 
+
+
+
 library(treetop)
 launchApp(launch.browser = TRUE)
 
@@ -85,3 +88,20 @@ treeRG03 <- clip_roi(tlas, Plots %>% filter(Plot=="RG03"))
 plot(lasRG03 , bg = "white", size = 2)
 plot(treeRG03, bg = "white", size = 3, color="treeID")
 hist(treeRG03$Z)
+
+writeLAS(lasRG03,"C:/Users/hkropp/Documents/Lidar/nlasRG03.laz")
+
+library(leafR)
+
+RG03LV <- lad.voxels("C:/Users/hkropp/Documents/Lidar/nlasRG03.laz")
+
+RG03LAD <- lad.profile(RG03LV)
+
+RG03LAI <- lai.raster(RG03LV)
+plot(RG03LAI)
+
+
+
+res(RG03LAI)
+
+
