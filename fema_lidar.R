@@ -22,13 +22,14 @@ dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
 plot(dtm_tin)
 plot_dtm3d(dtm_tin, bg = "white")
 
+# clip to forest area
 
 nlas <- las - dtm_tin
 plot(nlas, size = 4, bg = "white")
 
-nclip <- clip_rectangle(nlas, 466700,4767250,467800,4767900)
+nclip <- clip_rectangle(nlas, 466500,4768250,467400,4767900)
 
-chm_p2r_05 <- rasterize_canopy(nclip, 0.5, p2r(subcircle = 0.2), pkg = "terra")
+chm_p2r_05 <- rasterize_canopy(nlas, 0.5, p2r(subcircle = 0.2), pkg = "terra")
 plot(chm_p2r_05)
 
 kernel <- matrix(1,3,3)
@@ -46,8 +47,10 @@ FI_plotsp <- as(FI_plotsSF, "Spatial")
 FI_plotsu <- vect(FI_plotsp)
 
 FI_plots <- project(FI_plotsu, chm_p2r_05_smoothed)
+
+Plots_crop <- crop(FI_plotsu, chm_p2r_05_smoothed)
 plot(chm_p2r_05_smoothed)
-plot(FI_plots)
+plot(FI_plots, add=TRUE)
 plot(chm_p2r_05_smoothed, add=TRUE, legend=FALSE)
 
 plot(chm_p2r_05_smoothed)
@@ -90,6 +93,22 @@ plot(treeRG03, bg = "white", size = 3, color="treeID")
 hist(treeRG03$Z)
 
 writeLAS(lasRG03,"C:/Users/hkropp/Documents/Lidar/nlasRG03.laz")
+
+# pull out lidar for plots
+plotAll <- unique(FI_plots$Plot)
+plotSub <- list()
+chmplotC <- list()
+chmplot <- list()
+
+for(i in 1:length(plotAll)){
+  plotSub[[i]] <-  subset(FI_plots, FI_plots$Plot == plotAll[i])
+  chmplotC[[i]] <- crop(chm_p2r_05_smoothed, plotSub[[i]])
+  chmplot[[i]] <- mask(chmplotC[[i]], plotSub[[i]])
+  
+}
+
+
+
 
 library(leafR)
 
