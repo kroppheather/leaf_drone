@@ -184,4 +184,10 @@ library(ggplot2)
 ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=Names))+
   geom_boxplot()
 
-# to do: NDVI 
+# to do: # lidar profiles to match
+
+
+#NDVI (from drone), see about matching plots versus not
+
+
+
