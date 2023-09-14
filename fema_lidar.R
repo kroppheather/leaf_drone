@@ -3,6 +3,7 @@ library(future)
 library(dplyr)
 library(terra)
 library(sf)
+library(leafR)
 
 l1 <- readLAS("C:/Users/hkropp/Documents/ArcGIS/Projects/Lidar/data/l2019/18TVN650670.las")
 
@@ -48,22 +49,11 @@ FI_plotsu <- vect(FI_plotsp)
 
 FI_plots <- project(FI_plotsu, chm_p2r_05_smoothed)
 
-Plots_crop <- crop(FI_plotsu, chm_p2r_05_smoothed)
+Plots_crop <- crop(FI_plots, chm_p2r_05_smoothed)
 plot(chm_p2r_05_smoothed)
 plot(FI_plots, add=TRUE)
-plot(chm_p2r_05_smoothed, add=TRUE, legend=FALSE)
 
-plot(chm_p2r_05_smoothed)
-plot(FI_plots["Plot"], add=TRUE)
-
-RG01 <- subset(FI_plots, FI_plots$Plot == "RG01")
-
-
-
-chmRG01c <- crop(chm_p2r_05_smoothed, RG01)
-chmRG01 <- mask(chmRG01c, RG01)
-
-Plots <- sf::st_as_sf(FI_plots)
+Plots <- sf::st_as_sf(Plots_crop)
 plot(Plots["Plot"])
 
 plot(chmRG01)
@@ -73,14 +63,10 @@ plot(treeRG01, bg = "white", size = 2, color = "treeID")
 writeRaster(chmRG01, "C:/Users/hkropp/Documents/Lidar/RG01_CHM.tif")
 
 
-
-
 library(treetop)
 launchApp(launch.browser = TRUE)
 
 hist(treeRG01$Z)
-
-
 
 RG03 <- subset(FI_plots, FI_plots$Plot == "RG03")
 chmRG03c <- crop(chm_p2r_05_smoothed, RG03)
@@ -95,32 +81,107 @@ hist(treeRG03$Z)
 writeLAS(lasRG03,"C:/Users/hkropp/Documents/Lidar/nlasRG03.laz")
 
 # pull out lidar for plots
-plotAll <- unique(FI_plots$Plot)
+plotAll <- unique(Plots_crop$Plot)
 plotSub <- list()
 chmplotC <- list()
 chmplot <- list()
-
+# subset chm
 for(i in 1:length(plotAll)){
-  plotSub[[i]] <-  subset(FI_plots, FI_plots$Plot == plotAll[i])
+  plotSub[[i]] <-  subset(Plots_crop, Plots_crop$Plot == plotAll[i])
   chmplotC[[i]] <- crop(chm_p2r_05_smoothed, plotSub[[i]])
   chmplot[[i]] <- mask(chmplotC[[i]], plotSub[[i]])
   
 }
 
+lasPlot <- list()
+for(i in 1:length(plotAll)){
+  lasPlot[[i]] <- clip_roi(nlas, Plots %>% filter(Plot==plotAll[i]))
+  writeLAS(lasPlot[[i]],paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz"))
+}
+
+voxelsG03 <- lad.voxels("C:/Users/hkropp/Documents/Lidar/plots/RG03.laz")
+ladG03 <- lad.profile(voxelsG03)
+laiG03 <- lai.raster(ladG03)
+
+voxelsPlot <- lad.voxels(paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz"))
+for(i in 1:length(plotAll)){
+  voxelsPlot[[i]] <- lad.voxels(paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz"))
+}
+
+ladPlot <- list()
+laiPlot <- list()
+for(i in 1:length(plotAll)){
+  ladPlot[[i]] <- lad.profile(lad.voxels(paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz")))
+}
+
+laiPlot <- list()
+for(i in 1:length(plotAll)){
+  laiPlot[[i]] <- lai.raster(voxelsPlot[[i]])
+}
+plot(laiPlot[[15]])
 
 
 
-library(leafR)
 
-RG03LV <- lad.voxels("C:/Users/hkropp/Documents/Lidar/nlasRG03.laz")
+canopyLAI <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/canopy_lai.csv")
+canopyPlot <- canopyLAI %>%
+  group_by(site_id) %>%
+  summarize(LAI = mean(PAR_LAI))
 
-RG03LAD <- lad.profile(RG03LV)
+SpeciesInfo <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/speciesID.csv")
+forestInventory <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data.csv")
+forestInventory$tree_area.cm2 <- (((forestInventory$DBH.cm / 2)^2) * pi/10000) 
+FI <- forestInventory %>%
+  filter(Dead == "N", DBH.cm >3 ) %>%
+  group_by(Plot, Species) %>%
+  summarise(totArea = sum(tree_area.cm2,na.rm=TRUE),
+            ncount = n(),
+            aveDBH = mean(DBH.cm,na.rm=TRUE))
 
-RG03LAI <- lai.raster(RG03LV)
-plot(RG03LAI)
+FITot <-  forestInventory %>%
+  filter(Dead == "N", DBH.cm >3 ) %>%
+  group_by(Plot) %>%
+  summarise(totArea = sum(tree_area.cm2,na.rm=TRUE),
+            ncount = n(),
+            aveDBH = mean(DBH.cm,na.rm=TRUE))
+
+FIjoin <- left_join(FI,FITot, by="Plot")
+FIjoin$PercBA <- (FIjoin$totArea.x/FIjoin$totArea.y)*100  
 
 
+FItop <- FIjoin %>%
+  filter(PercBA > 20)
 
-res(RG03LAI)
+PlotSpec <- FItop %>%
+  select(Species,Plot)
 
+plotsI <- unique(PlotSpec$Plot)
 
+PlotComp <- left_join(PlotSpec, SpeciesInfo, by=c("Species"="Code"))
+
+NameSub <- character()
+for(i in 1:nrow(PlotComp)){
+  NameSub[i] <- paste0(substr(strsplit(PlotComp$Species.y[i], " ")[[1]][1],1,1), ". ",
+                         strsplit(PlotComp$Species.y[i], " ")[[1]][2])
+}
+
+PlotComp$NameSub <- NameSub
+PlotComp$Name <- ifelse(PlotComp$Genus =="Malus", "Malus sp.", PlotComp$NameSub )   
+
+pasteSub <- character()
+namecomp <- character()
+for(i in 1:length(plotsI)){
+  pasteSub <- PlotComp$Name[PlotComp$Plot == plotsI[i]]
+  namecomp[i] <- paste(pasteSub,  collapse = ", ")
+}
+namecomp
+
+nameDF <- data.frame(Plot = plotsI, Names = namecomp)
+
+canopyLAINames <- left_join(canopyLAI, nameDF, by=c("site_id"="Plot"))
+
+library(ggplot2)
+ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=Names))+
+  geom_boxplot()
+
+# to do: NDVI 

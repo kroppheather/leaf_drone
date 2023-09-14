@@ -45,5 +45,10 @@ for(i in 1:length(filesR)){
                  scaleG[[i]],
                  scaleB[[i]]) 
 }
+for(i in 1:length(filesR)){
+writeRaster(RGBi[[i]], paste0("K:/Environmental_Studies/hkropp/Private/sfm/RGB_test/RGB_",i,".tif"))
+}
+plotRGB(RGBi[[400]], r=1, g=2, b=3)
+plot( Rcomp[[400]], col=grey(1:100/100))
 
-plotRGB(RGBi[[1]])
+"K:/Environmental_Studies/hkropp/GIS/drone/campus/2023/mica_07_19/
