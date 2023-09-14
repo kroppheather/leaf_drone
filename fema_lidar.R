@@ -9,7 +9,7 @@ l1 <- readLAS("C:/Users/hkropp/Documents/ArcGIS/Projects/Lidar/data/l2019/18TVN6
 plot(l1)
 
 l2 <- readLAS("C:/Users/hkropp/Documents/ArcGIS/Projects/Lidar/data/l2019/18TVN665670.las")
-
+# remove outliers
 plot(l2)
 hist(l2@data$Z)
 las <- filter_poi(l2, Z >= 188, Z <= 285)
@@ -17,7 +17,7 @@ las <- filter_poi(l2, Z >= 188, Z <= 285)
 plot(las, size=2, bg="white")
 hist(las@data$Z)
 
-
+# dtm
 dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
 plot(dtm_tin)
 plot_dtm3d(dtm_tin, bg = "white")
