@@ -153,7 +153,7 @@ FItop <- FIjoin %>%
   filter(PercBA > 20)
 
 PlotSpec <- FItop %>%
-  select(Species,Plot)
+  select(Species,Plot, PercBA)
 
 plotsI <- unique(PlotSpec$Plot)
 
@@ -166,22 +166,32 @@ for(i in 1:nrow(PlotComp)){
 }
 
 PlotComp$NameSub <- NameSub
-PlotComp$Name <- ifelse(PlotComp$Genus =="Malus", "Malus sp.", PlotComp$NameSub )   
+PlotComp$Name <- ifelse(PlotComp$Genus =="Malus", "Malus sp.", PlotComp$NameSub ) 
+
+PlotComp <- PlotComp %>%
+  arrange(desc(PercBA))
+PlotComp[PlotComp$Plot == "RG03",]
 
 pasteSub <- character()
 namecomp <- character()
+namePerc <- character()
+
 for(i in 1:length(plotsI)){
+
   pasteSub <- PlotComp$Name[PlotComp$Plot == plotsI[i]]
+  percSub <-  paste0(pasteSub, "(",round(PlotComp$PercBA[PlotComp$Plot == plotsI[i]],0),")")
   namecomp[i] <- paste(pasteSub,  collapse = ", ")
+  namePerc[i] <- paste(percSub,  collapse = ", ")
 }
 namecomp
+namePerc
 
-nameDF <- data.frame(Plot = plotsI, Names = namecomp)
+nameDF <- data.frame(Plot = plotsI, Names = namecomp, namePerc=namePerc)
 
 canopyLAINames <- left_join(canopyLAI, nameDF, by=c("site_id"="Plot"))
 
 library(ggplot2)
-ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=Names))+
+ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=namePerc))+
   geom_boxplot()
 
 # to do: # lidar profiles to match
@@ -189,5 +199,41 @@ ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=Names))+
 
 #NDVI (from drone), see about matching plots versus not
 
+dronedir <- "K:/Environmental_Studies/hkropp/Private/drone"
+
+p0719 <- c(rast(paste0(dronedir,"/flight07_19/Flight2_7_19_transparent_reflectance_blue.tif")),
+           rast(paste0(dronedir,"/flight07_19/Flight2_7_19_transparent_reflectance_green.tif")),
+           rast(paste0(dronedir,"/flight07_19/Flight2_7_19_transparent_reflectance_red.tif")),
+           rast(paste0(dronedir,"/flight07_19/Flight2_7_19_transparent_reflectance_nir.tif")))
+
+ndvi0719 <- (p0719[[4]]- p0719[[3]])/(p0719[[4]]+ p0719[[3]])
+plot(ndvi0719)
+plot(FI_plotsSF["Plot"],add=TRUE)
+
+plots0719 <- crop(FI_plots,ndvi0719)
+zone0719 <- extract(ndvi0719,plots0719)
+IDtable0719 <- data.frame(ID=seq(1,nrow(values(plots0719))),
+                         Plot=values(plots0719)$Plot)
+values0719 <- na.omit(left_join(zone0719,IDtable0719, by="ID"))
+values0719$flight <- rep("phantom 07/19", nrow(values0719))
+colnames(values0719)[2] <- "NDVI"
+
+m0719 <- c(rast(paste0(dronedir,"/mica_07_19_23/mica2_07_19_23_transparent_reflectance_blue.tif")),
+           rast(paste0(dronedir,"/mica_07_19_23/mica2_07_19_23_transparent_reflectance_green.tif")),
+           rast(paste0(dronedir,"/mica_07_19_23/mica2_07_19_23_transparent_reflectance_red.tif")),
+           rast(paste0(dronedir,"/mica_07_19_23/mica2_07_19_23_transparent_reflectance_nir.tif")))
+
+mndvi0719 <- (m0719[[4]]- m0719[[3]])/(m0719[[4]]+ m0719[[3]])
+plot(mndvi0719)
+plot(FI_plotsSF["Plot"],add=TRUE)
+plotsm0719 <- crop(FI_plots,mndvi0719)
+zonem0719 <- extract(mndvi0719,plotsm0719)
+IDtablem0719 <- data.frame(ID=seq(1,nrow(values(plotsm0719))),
+                          Plot=values(plotsm0719)$Plot)
+valuesm0719 <- na.omit(left_join(zonem0719,IDtablem0719, by="ID"))
+valuesm0719 <- valuesm0719  %>%
+  filter(Plot != "RG08")
+valuesm0719$flight <- rep("mica 07/19", nrow(valuesm0719))
+colnames(valuesm0719)[2] <- "NDVI"
 
 
