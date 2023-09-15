@@ -113,6 +113,10 @@ laiPlot <- list()
 for(i in 1:length(plotAll)){
   ladPlot[[i]] <- lad.profile(lad.voxels(paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz")))
 }
+ladTest <- ladPlot[[1]]
+
+
+
 
 laiPlot <- list()
 for(i in 1:length(plotAll)){
@@ -120,7 +124,7 @@ for(i in 1:length(plotAll)){
 }
 plot(laiPlot[[15]])
 
-
+plotAll
 
 
 canopyLAI <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/canopy_lai.csv")
@@ -190,9 +194,27 @@ nameDF <- data.frame(Plot = plotsI, Names = namecomp, namePerc=namePerc)
 
 canopyLAINames <- left_join(canopyLAI, nameDF, by=c("site_id"="Plot"))
 
+# get nine colors
+colP <- hcl.colors(9, palette="Dark3")
+colorL <- c(colP[1],#RG01
+            colP[2],#RG03
+            colP[3],#RG06
+            colP[4],#RG010
+            colP[5],#RG14
+            colP[6])#RG17
+namesLAI <- unique(data.frame(Plot=canopyLAINames$site_id, namePerc=canopyLAINames$namePerc))
+namesLAI <- namesLAI %>%
+  arrange(Plot)
+namesLAIPlot <- namesLAI$namePerc
+
 library(ggplot2)
-ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=namePerc))+
-  geom_boxplot()
+ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=site_id))+
+  geom_boxplot()+
+  xlab("Forest inventory plot")+
+  ylab(expression(paste("Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
+  scale_fill_manual(values=colorL,
+                    labels=namesLAIPlot)+theme_classic()+labs(fill="Dominant species composition")+ theme(text = element_text(size = 15)) 
+  
 
 # to do: # lidar profiles to match
 
@@ -236,4 +258,125 @@ valuesm0719 <- valuesm0719  %>%
 valuesm0719$flight <- rep("mica 07/19", nrow(valuesm0719))
 colnames(valuesm0719)[2] <- "NDVI"
 
+m0725 <- c(rast(paste0(dronedir,"/mica_07_25/mica_07_25_transparent_reflectance_blue.tif")),
+           rast(paste0(dronedir,"/mica_07_25/mica_07_25_transparent_reflectance_green.tif")),
+           rast(paste0(dronedir,"/mica_07_25/mica_07_25_transparent_reflectance_red.tif")),
+           rast(paste0(dronedir,"/mica_07_25/mica_07_25_transparent_reflectance_nir.tif")))
+
+mndvi0725 <- (m0725[[4]]- m0725[[3]])/(m0725[[4]]+ m0725[[3]])
+plot(mndvi0725)
+plot(FI_plotsSF["Plot"],add=TRUE)
+plotsm0725 <- crop(FI_plots,mndvi0725)
+zonem0725 <- extract(mndvi0725,plotsm0725)
+IDtablem0725 <- data.frame(ID=seq(1,nrow(values(plotsm0725))),
+                           Plot=values(plotsm0725)$Plot)
+valuesm0725 <- na.omit(left_join(zonem0725,IDtablem0725, by="ID"))
+valuesm0725 <- valuesm0725  %>%
+  filter(Plot == "RG08")
+valuesm0725$flight <- rep("mica 07/25", nrow(valuesm0725))
+colnames(valuesm0725)[2] <- "NDVI"
+
+
+m0726 <- c(rast(paste0(dronedir,"/mica_07_26/micafix_07_26_transparent_reflectance_blue.tif")),
+           rast(paste0(dronedir,"/mica_07_26/micafix_07_26_transparent_reflectance_green.tif")),
+           rast(paste0(dronedir,"/mica_07_26/micafix_07_26_transparent_reflectance_red.tif")),
+           rast(paste0(dronedir,"/mica_07_26/micafix_07_26_transparent_reflectance_nir.tif")))
+
+mndvi0726 <- (m0726[[4]]- m0726[[3]])/(m0726[[4]]+ m0726[[3]])
+plot(mndvi0726)
+plot(FI_plotsSF["Plot"],add=TRUE)
+plotsm0726 <- crop(FI_plots,mndvi0726)
+zonem0726 <- extract(mndvi0726,plotsm0726)
+IDtablem0726 <- data.frame(ID=seq(1,nrow(values(plotsm0726))),
+                           Plot=values(plotsm0726)$Plot)
+valuesm0726 <- na.omit(left_join(zonem0726,IDtablem0726, by="ID"))
+valuesm0726$flight <- rep("mica 07/26", nrow(valuesm0726))
+colnames(valuesm0726)[2] <- "NDVI"
+
+
+ndviAll <- rbind(values0719,valuesm0719,valuesm0725,valuesm0726)
+ndviAllNames <- left_join(ndviAll, nameDF, by=c("Plot"))
+unique(ndviAllNames$Plot)
+unique(canopyLAINames$site_id)
+
+ggplot(ndviAllNames, aes(x=Plot, y=NDVI, fill=namePerc))+
+  geom_boxplot()
+
+ndviSub <- ndviAllNames %>%
+  filter(Plot == "RG10" | Plot == "RG03" | Plot == "RG17" | Plot == "RG08" | Plot == "RG14" | Plot == "RG09")
+
+
+colorN <- c(colP[2],#RG03
+            colP[7],#RG08
+            colP[8],#RG09
+            colP[4],#RG010
+            colP[5],#RG14
+            colP[6])#RG17
+namesNDVI <- unique(data.frame(Plot=ndviSub$Plot, namePerc=ndviSub$namePerc))
+namesNDVI <- namesNDVI %>%
+  arrange(Plot)
+namesNDVIPlot <- namesNDVI$namePerc
+
+ggplot(ndviSub, aes(x=Plot, y=NDVI, fill=Plot))+
+  geom_boxplot(outlier.shape=NA)+
+  xlab("Forest inventory plot")+
+  ylab("sUAS NDVI (-)")+
+  theme_classic()+
+  labs(fill="Dominant species composition")+ylim(0.5,1)+
+  scale_fill_manual(values=colorN,
+                    labels=namesNDVIPlot)+ theme(text = element_text(size = 15))   
+  
+plot(seq(1,8),seq(1,8),pch=19, col=colP)
+
+
+
+# plots for lidar
+
+plotLidar <- c("RG01", "RG03","RG06","RG10","RG14","RG17")
+
+PlotName <- nameDF %>%
+  filter(Plot %in% plotLidar)
+
+namesPLi <- PlotName$namePerc
+
+test <- terra::values(laiPlot[[1]])
+plot(laiPlot[[1]])
+
+LidarLAIDF <- list()
+for(i in 1:length(plotLidar)){
+  j = which(plotAll == plotLidar[i])
+  LidarLAIDF[[i]] = data.frame(LAI = terra::values(laiPlot[[j]]),
+                          Plot = rep(plotLidar[i], length(terra::values(laiPlot[[j]]))))
+  
+}
+
+
+lidarLDF <- do.call("rbind", LidarLAIDF)
+lidarLDF <- lidarLDF %>%
+  filter(LAI > 0)
+
+
+colorLi <- c(colP[1],#RG01
+             colP[2],#RG03
+             colP[3],#RG06
+             colP[4],#RG010
+             colP[5],#RG14
+             colP[6])#RG17
+  
+
+ggplot(lidarLDF, aes(x=Plot, y=LAI, fill=Plot))+
+  geom_boxplot()+
+  xlab("Forest inventory plot")+
+  ylab(expression(paste("Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
+  scale_fill_manual(values=colorLi,
+                    labels=namesPLi)+theme_classic()+labs(fill="Dominant species composition")+ theme(text = element_text(size = 15)) 
+
+
+
+plot(c(0,7), c(0,35), type="n", axes=FALSE)
+for(i in 1:length(plotLidar)){
+  j = which(plotAll == plotLidar[i])
+  polygon(c(i+ladPlot[[j]]$lad, i-rev(ladPlot[[j]]$lad)),c(ladPlot[[j]]$height,rev(ladPlot[[j]]$height)), col=colorLi[i])
+}
+axis(1, seq(1,6), labels=plotLidar)
 
