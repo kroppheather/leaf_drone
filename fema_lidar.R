@@ -199,21 +199,32 @@ colP <- hcl.colors(9, palette="Dark3")
 colorL <- c(colP[1],#RG01
             colP[2],#RG03
             colP[3],#RG06
-            colP[4],#RG010
+            colP[2],#RG010
             colP[5],#RG14
             colP[6])#RG17
 namesLAI <- unique(data.frame(Plot=canopyLAINames$site_id, namePerc=canopyLAINames$namePerc))
 namesLAI <- namesLAI %>%
   arrange(Plot)
 namesLAIPlot <- namesLAI$namePerc
+namesLAI$namesCommon <- c("sugar maple", "apple-buckthorn",
+                 "norway spruce-green ash", "apple-buckthorn",
+                  "buckthorn", "norway maple-sugar maple-buckthorn")
+
+namesJoinF <- left_join(canopyLAINames, namesLAI, by=c("site_id"="Plot"))
 
 library(ggplot2)
-ggplot(canopyLAINames, aes(x=site_id, y=PAR_LAI, fill=site_id))+
+ggplot(namesJoinF, aes(x=site_id, y=PAR_LAI, fill=namesCommon))+
   geom_boxplot()+
   xlab("Forest inventory plot")+
   ylab(expression(paste("Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
-  scale_fill_manual(values=colorL,
-                    labels=namesLAIPlot)+theme_classic()+labs(fill="Dominant species composition")+ theme(text = element_text(size = 15)) 
+  theme_classic()+labs(fill="Dominant species composition")+ 
+  theme(text = element_text(size = 25))+
+  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                             rgb(230,159,0,maxColorValue=255), #orange
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(0,114,178,maxColorValue=255), #blue
+                             rgb(0,158,115,maxColorValue=255) #blue green
+                             ))
   
 
 # to do: # lidar profiles to match
@@ -298,6 +309,15 @@ ndviAll <- rbind(values0719,valuesm0719,valuesm0725,valuesm0726)
 ndviAllNames <- left_join(ndviAll, nameDF, by=c("Plot"))
 unique(ndviAllNames$Plot)
 unique(canopyLAINames$site_id)
+NDVIcommon <- data.frame(namePerc = unique(ndviAllNames$namePerc),
+                         commonName = c("apple-buckthorn",
+                                        "buckthorn",
+                                        "norway maple-sugar maple-buckthorn",
+                                        "apple-buckthorn",
+                                        "apple-buckthorn",
+                                        "Sugar maple-Hemlock",
+                                        "Ash spp.",
+                                        "")
 
 ggplot(ndviAllNames, aes(x=Plot, y=NDVI, fill=namePerc))+
   geom_boxplot()
@@ -326,6 +346,14 @@ ggplot(ndviSub, aes(x=Plot, y=NDVI, fill=Plot))+
   scale_fill_manual(values=colorN,
                     labels=namesNDVIPlot)+ theme(text = element_text(size = 15))   
   
+
+scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                           rgb(230,159,0,maxColorValue=255), #orange
+                           rgb(240,228,66,maxColorValue=255), # yellow
+                           rgb(0,114,178,maxColorValue=255), #blue
+                           rgb(0,158,115,maxColorValue=255) #blue green
+))
+
 plot(seq(1,8),seq(1,8),pch=19, col=colP)
 
 
@@ -362,6 +390,8 @@ colorLi <- c(colP[1],#RG01
              colP[4],#RG010
              colP[5],#RG14
              colP[6])#RG17
+
+
   
 
 ggplot(lidarLDF, aes(x=Plot, y=LAI, fill=Plot))+
