@@ -4,6 +4,9 @@ library(dplyr)
 library(terra)
 library(sf)
 library(leafR)
+library(ggplot2)
+
+dirFigures <- "E:/Google Drive/research/proposal/MRI/figures"
 
 l1 <- readLAS("C:/Users/hkropp/Documents/ArcGIS/Projects/Lidar/data/l2019/18TVN650670.las")
 
@@ -207,25 +210,26 @@ namesLAI <- namesLAI %>%
   arrange(Plot)
 namesLAIPlot <- namesLAI$namePerc
 namesLAI$namesCommon <- c("sugar maple", "apple-buckthorn",
-                 "norway spruce-green ash", "apple-buckthorn",
+                 "norway spruce plantation", "apple-buckthorn",
                   "buckthorn", "norway maple-sugar maple-buckthorn")
 
 namesJoinF <- left_join(canopyLAINames, namesLAI, by=c("site_id"="Plot"))
 
-library(ggplot2)
-ggplot(namesJoinF, aes(x=site_id, y=PAR_LAI, fill=namesCommon))+
+
+a <- ggplot(namesJoinF, aes(x=site_id, y=PAR_LAI, fill=namesCommon))+
   geom_boxplot()+
   xlab("Forest inventory plot")+
   ylab(expression(paste("Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
   theme_classic()+labs(fill="Dominant species composition")+ 
-  theme(text = element_text(size = 25))+
+  theme(text = element_text(size = 15),axis.text.x = element_blank())+
   scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
                              rgb(230,159,0,maxColorValue=255), #orange
                              rgb(240,228,66,maxColorValue=255), # yellow
                              rgb(0,114,178,maxColorValue=255), #blue
                              rgb(0,158,115,maxColorValue=255) #blue green
                              ))
-  
+ggsave("/LAI.png"  ,
+       a, path=dirFigures, width=8, height=5, units="in", dpi=300)
 
 # to do: # lidar profiles to match
 
@@ -315,14 +319,17 @@ NDVIcommon <- data.frame(namePerc = unique(ndviAllNames$namePerc),
                                         "norway maple-sugar maple-buckthorn",
                                         "apple-buckthorn",
                                         "apple-buckthorn",
-                                        "Sugar maple-Hemlock",
-                                        "Ash spp.",
-                                        "")
+                                        "sugar maple-hemlock",
+                                        "ash spp.",
+                                        "white spruce plantation",
+                                       "Locust-Buckthorn" ))
 
-ggplot(ndviAllNames, aes(x=Plot, y=NDVI, fill=namePerc))+
+NDVIAllNames2 <- left_join(ndviAllNames, NDVIcommon, by="namePerc")
+
+ggplot(NDVIAllNames2, aes(x=Plot, y=NDVI, fill=commonName))+
   geom_boxplot()
 
-ndviSub <- ndviAllNames %>%
+ndviSub <- NDVIAllNames2 %>%
   filter(Plot == "RG10" | Plot == "RG03" | Plot == "RG17" | Plot == "RG08" | Plot == "RG14" | Plot == "RG09")
 
 
@@ -337,22 +344,26 @@ namesNDVI <- namesNDVI %>%
   arrange(Plot)
 namesNDVIPlot <- namesNDVI$namePerc
 
-ggplot(ndviSub, aes(x=Plot, y=NDVI, fill=Plot))+
+b <- ggplot(ndviSub, aes(x=Plot, y=NDVI, fill=commonName))+
   geom_boxplot(outlier.shape=NA)+
   xlab("Forest inventory plot")+
   ylab("sUAS NDVI (-)")+
   theme_classic()+
   labs(fill="Dominant species composition")+ylim(0.5,1)+
-  scale_fill_manual(values=colorN,
-                    labels=namesNDVIPlot)+ theme(text = element_text(size = 15))   
+   theme(text = element_text(size = 15),axis.text.x = element_blank())+
+  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                             rgb(230,159,0,maxColorValue=255), #orange
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(0,158,115,maxColorValue=255),
+                            rgb(0,114,178,maxColorValue=255))) #blue
+
+
+ggsave("/NDVI.png"  ,
+       b, path=dirFigures, width=8, height=5, units="in", dpi=300)
   
 
-scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
-                           rgb(230,159,0,maxColorValue=255), #orange
-                           rgb(240,228,66,maxColorValue=255), # yellow
-                           rgb(0,114,178,maxColorValue=255), #blue
-                           rgb(0,158,115,maxColorValue=255) #blue green
-))
+
+
 
 plot(seq(1,8),seq(1,8),pch=19, col=colP)
 
