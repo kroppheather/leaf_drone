@@ -73,22 +73,24 @@ plot(tlas2, bg = "white", size = 2, color = "treeID") # visualize trees
 x <- plot(nlas, size = 4, bg = "white")
 add_treetops3d(x, ttops)
 
-tclip <- clip_rectangle(tlas2, 313400,4875000,313800,4875600)
+tclip <- clip_rectangle(tlas, 313400,4875000,313800,4875600)
 plot(tclip, bg = "white", size = 2, color = "treeID") # visualize trees
 unique(tclip$treeID)
 
 tree <- filter_poi(tclip, treeID == 555)
 plot(tree, bg = "white", size = 4) # visualize trees
 
-tree <- filter_poi(tclip, treeID >= 506, treeID <= 600)
+tree <- filter_poi(tclip, treeID >= 17000, treeID <= 17300)
 plot(tree, bg = "white", size = 2, color ="RGB") # visualize trees
+plot(tree, bg = "white", size = 4, color ="treeID")
 
 nclip <- clip_rectangle(nlas, 313400,4875000,313800,4875600)
 
 plot(nclip, size = 2, bg = "white", color="RGB")
 
-
-
+nclip2 <- clip_rectangle(tclip, 313750,4875000,313800,4875100)
+plot(nclip2, bg = "white", size = 4, color ="treeID")
+plot(nclip2, bg = "grey", size = 3)
 ### forest metrics
 install.packages("treetop")
 
