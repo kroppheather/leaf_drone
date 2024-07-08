@@ -24,6 +24,7 @@ plot(nlas, size = 4, bg = "white")
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_388000_7081000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_388000_7081000.tif"))
 
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_388000_7086000_classified_point_cloud_colorized.laz"),
@@ -45,6 +46,7 @@ plot(nlas, size = 4, bg = "white")
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_388000_7086000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_388000_7086000.tif"))
 
 
 # just a strip
@@ -69,6 +71,7 @@ plot(nlas, size = 4, bg = "white")
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_388000_7086000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_388000_7086000.tif"))
 
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_389000_7087000_classified_point_cloud_colorized.laz"),
@@ -91,6 +94,8 @@ plot(nlas, size = 4, bg = "white")
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_389000_7087000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_389000_7087000.tif"))
+
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_389000_7091000_classified_point_cloud_colorized.laz"),
               filter = "-drop_z_below 0")
@@ -110,6 +115,7 @@ nlas <- las - dtm_tin
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_389000_7091000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_389000_7091000.tif"))
 
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_390000_7081000_classified_point_cloud_colorized.laz"),
@@ -130,6 +136,7 @@ nlas <- las - dtm_tin
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_390000_7081000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_390000_7081000.tif"))
 
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_390000_7090000_classified_point_cloud_colorized.laz"),
@@ -150,6 +157,7 @@ nlas <- las - dtm_tin
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_390000_7090000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_390000_7090000.tif"))
 
 
 
@@ -172,6 +180,9 @@ nlas <- las - dtm_tin
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_391000_7083000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_391000_7083000.tif"))
+
+
 
 l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_393000_7081000_classified_point_cloud_colorized.laz"),
               filter = "-drop_z_below 0")
@@ -191,6 +202,112 @@ nlas <- las - dtm_tin
 chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
 plot(chm)
 writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_393000_7081000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_393000_7081000.tif"))
+
+
+l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_394000_7079000_classified_point_cloud_colorized.laz"),
+              filter = "-drop_z_below 0")
+range(l1@data$Z)
+hist(l1@data$Z)
+
+# filter out outliers
+las <- filter_poi(l1, Z >= 550, Z <= 850)
+plot(las, color="RGB", bg="white")
+hist(las@data$Z)
+# get digital terrain model
+dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
+plot(dtm_tin)
+# height of surface
+nlas <- las - dtm_tin
+# canopy height raster
+chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
+plot(chm)
+writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_394000_7079000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_394000_7079000.tif"))
+
+
+# small strip
+l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_394000_7091000_classified_point_cloud_colorized.laz"),
+              filter = "-drop_z_below 0")
+range(l1@data$Z)
+hist(l1@data$Z)
+
+# filter out outliers
+las <- filter_poi(l1, Z >= 500, Z <= 850)
+plot(las, color="RGB", bg="white")
+hist(las@data$Z)
+# get digital terrain model
+dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
+plot(dtm_tin)
+# height of surface
+nlas <- las - dtm_tin
+# canopy height raster
+chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
+plot(chm)
+writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_394000_7079000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_394000_7079000.tif"))
+
+
+
+l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_395000_7084000_classified_point_cloud_colorized.laz"),
+              filter = "-drop_z_below 0")
+range(l1@data$Z)
+hist(l1@data$Z)
+
+# filter out outliers
+las <- filter_poi(l1, Z >= 500, Z <= 700)
+plot(las, color="RGB", bg="white")
+hist(las@data$Z)
+# get digital terrain model
+dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
+plot(dtm_tin)
+# height of surface
+nlas <- las - dtm_tin
+# canopy height raster
+chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
+plot(chm)
+writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_395000_7084000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_395000_7084000.tif"))
+
+
+
+l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_395000_7089000_classified_point_cloud_colorized.laz"))
+range(l1@data$Z)
+hist(l1@data$Z)
+
+# filter out outliers
+las <- filter_poi(l1, Z >= 500, Z <= 700)
+plot(las, color="RGB", bg="white")
+hist(las@data$Z)
+# get digital terrain model
+dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
+plot(dtm_tin)
+# height of surface
+nlas <- las - dtm_tin
+# canopy height raster
+chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
+plot(chm)
+writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_395000_7089000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_395000_7089000.tif"))
+
+l1 <- readLAS(paste0(dirDat,"NEON_D19_HEAL_DP1_396000_7081000_classified_point_cloud_colorized.laz"))
+range(l1@data$Z)
+hist(l1@data$Z)
+
+# filter out outliers
+las <- filter_poi(l1, Z >= 400, Z <= 900)
+plot(las, color="RGB", bg="white")
+hist(las@data$Z)
+# get digital terrain model
+dtm_tin <- rasterize_terrain(las, res = 1, algorithm = tin())
+plot(dtm_tin)
+# height of surface
+nlas <- las - dtm_tin
+# canopy height raster
+chm <- rasterize_canopy(nlas, 0.5, pitfree(subcircle = 0.2))
+plot(chm)
+writeRaster(chm, paste0(dirSave, "/NEON_D19_HEAL_DP1_396000_7081000.tif"))
+writeRaster(dtm_tin, paste0(dirSave, "_dtm/NEON_D19_HEAL_DP1_396000_7081000.tif"))
 
 ####### old tree class -----
 
