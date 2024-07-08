@@ -341,3 +341,29 @@ ttops_chm_p2r_05_smoothed <- locate_trees(chm_p2r_05_smoothed, lmf(5))
 algo <- dalponte2016(chm_p2r_05_smoothed, ttops_chm_p2r_05_smoothed)
 tlas <- segment_trees(nlas2, algo) # segment point cloud
 plot(tlas, bg = "white", size = 2, color = "treeID") 
+
+
+
+############ merge files
+filesC <- list.files(dirSave)
+chmL <- list()
+for(i in 1:length(filesC)){
+  chmL[[i]] <- rast(paste0(dirSave, "/", filesC[i]))
+}
+
+chmMap <- do.call("merge",chmL)
+plot(chmMap)
+
+
+filesD <- list.files(paste0(dirSave, "_dtm"))
+dtmL <- list()
+for(i in 1:length(filesC)){
+  dtmL[[i]] <- rast(paste0(dirSave, "_dtm/", filesD[i]))
+}
+
+dtmMap <- do.call("merge",dtmL)
+plot(dtmMap)
+
+drone17 <- rast("/Users/hkropp/Library/CloudStorage/GoogleDrive-hkropp@hamilton.edu/My Drive/research/projects/Healy_ET/alaska_2018/AK_uas_mapping/Neon_map.tif")
+crs(dtmMap)
+
