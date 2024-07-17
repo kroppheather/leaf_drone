@@ -6,6 +6,8 @@ library(sf)
 library(leafR)
 library(ggplot2)
 
+hL <- readLAS("C:/Users/hkropp/Documents/NEON_lidar-point-cloud-line/NEON.D19.HEAL.DP1.30003.001.2018-08.basic.20230907T165247Z.RELEASE-2023/NEON_D19_HEAL_DP1_385000_7080000_classified_point_cloud_colorized.laz")
+
 dirFigures <- "E:/Google Drive/research/proposal/MRI/figures"
 
 l1 <- readLAS("C:/Users/hkropp/Documents/ArcGIS/Projects/Lidar/data/l2019/18TVN650670.las")
