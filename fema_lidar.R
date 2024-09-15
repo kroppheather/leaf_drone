@@ -33,7 +33,7 @@ plot_dtm3d(dtm_tin, bg = "white")
 nlas <- las - dtm_tin
 plot(nlas, size = 4, bg = "white")
 
-nclip <- clip_rectangle(nlas, 466500,4768250,467400,4767900)
+nclip <- clip_rectangle(nlas, 466500,4767200,467700,4767900)
 
 chm_p2r_05 <- rasterize_canopy(nlas, 0.5, p2r(subcircle = 0.2), pkg = "terra")
 plot(chm_p2r_05)
@@ -124,7 +124,7 @@ plotAll
 
 voxelsG03 <- lad.voxels("C:/Users/hkropp/Documents/Lidar/plots/RG03.laz")
 ladG03 <- lad.profile(voxelsG03)
-laiG03 <- lai.raster(ladG03)
+laiG03 <- lai.raster(voxelsG03)
 
 voxelsPlot <- lad.voxels(paste0("C:/Users/hkropp/Documents/Lidar/plots/",plotAll[i],".laz"))
 for(i in 1:length(plotAll)){
