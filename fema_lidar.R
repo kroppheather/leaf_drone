@@ -138,8 +138,14 @@ for(i in 1:length(plotAll)){
 }
 ladTest <- ladPlot[[1]]
 
+plot(ladPlot[[1]])
+plot(ladPlot[[4]])
+str(ladPlot[[1]])
 
-
+ladData <- list()
+for(i in 1:length(plotAll)){
+  ladPlot[[i]]$plot <- rep(plotAll[i], nrow(ladPlot[[i]]))
+}
 
 laiPlot <- list()
 for(i in 1:length(plotAll)){
