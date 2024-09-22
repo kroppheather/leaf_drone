@@ -145,10 +145,22 @@ laiPlot <- list()
 for(i in 1:length(plotAll)){
   laiPlot[[i]] <- lai.raster(voxelsPlot[[i]])
 }
-plot(laiPlot[[15]])
+plot(laiPlot[[2]])
+
+test <- values(laiPlot[[2]])
 
 plotAll
 
+laiAll <- list()
+for(i in 1:length(plotAll)){
+  laiAll[[i]] <- data.frame(lai=values(laiPlot[[i]]),
+                            plotID=rep(plotAll[i],length(values(laiPlot[[i]]))))
+}
+
+laiDF <- do.call("rbind", laiAll)
+
+ggplot(laiDF, aes(as.factor(plotID),lai))+
+  geom_boxplot()
 
 canopyLAI <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/canopy_lai.csv")
 canopyPlot <- canopyLAI %>%
@@ -250,6 +262,32 @@ a <- ggplot(namesJoinF, aes(x=site_id, y=PAR_LAI, fill=namesCommon))+
                              ))
 ggsave("/LAI.png"  ,
        a, path=dirFigures, width=8, height=5, units="in", dpi=300)
+
+#Lai lidar
+laiLid <- laiDF %>%
+  filter(plotID == "RGO1" |
+           plotID == "RGO3" |
+           plotID == "RG06" |
+           plotID == "RG10" |
+           plotID == "RG14" |
+           plotID == "RG17" )
+
+laiLidN <- left_join(laiLid, namesLAI, by=c("plotID"="Plot"))
+
+laiLID <- laiLidN %>%
+  filter(lai !=0)
+ggplot(laiLID, aes(x=plotID, y=lai, fill=namesCommon))+
+  geom_boxplot()+
+  xlab("Forest inventory plot")+
+  ylab(expression(paste("Lidar derived Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
+  theme_classic()+labs(fill="Dominant species composition")+ 
+  theme(text = element_text(size = 15),axis.text.x = element_blank())+
+  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                             rgb(230,159,0,maxColorValue=255), #orange
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(0,114,178,maxColorValue=255), #blue
+                             rgb(0,158,115,maxColorValue=255) #blue green
+  ))
 
 # to do: # lidar profiles to match
 
