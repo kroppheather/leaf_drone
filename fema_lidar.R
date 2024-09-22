@@ -265,8 +265,8 @@ ggsave("/LAI.png"  ,
 
 #Lai lidar
 laiLid <- laiDF %>%
-  filter(plotID == "RGO1" |
-           plotID == "RGO3" |
+  filter(plotID == "RG01" |
+           plotID == "RG03" |
            plotID == "RG06" |
            plotID == "RG10" |
            plotID == "RG14" |
@@ -279,7 +279,7 @@ laiLID <- laiLidN %>%
 ggplot(laiLID, aes(x=plotID, y=lai, fill=namesCommon))+
   geom_boxplot()+
   xlab("Forest inventory plot")+
-  ylab(expression(paste("Lidar derived Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
+  ylab(expression(paste("LiDAR-derived leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
   theme_classic()+labs(fill="Dominant species composition")+ 
   theme(text = element_text(size = 15),axis.text.x = element_blank())+
   scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
