@@ -527,3 +527,6 @@ ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
                              rgb(0,114,178,maxColorValue=255)))+ 
   labs(x="Canopy height",y="Density",fill="Dominant species composition", color="Dominant species composition")+
   theme(text = element_text(size = 15))
+
+
+
