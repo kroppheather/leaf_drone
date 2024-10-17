@@ -182,6 +182,9 @@ canopyPlot <- canopyLAI %>%
 
 SpeciesInfo <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/speciesID.csv")
 forestInventory <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data.csv")
+
+RG17 <- forestInventory %>%
+  filter(Plot == "RG17")
 forestInventory$tree_area.cm2 <- (((forestInventory$DBH.cm / 2)^2) * pi/10000) 
 FI <- forestInventory %>%
   filter(Dead == "N", DBH.cm >3 ) %>%
@@ -474,14 +477,17 @@ colorLi <- c(colP[1],#RG01
              colP[6])#RG17
 
 
-  
+NamesLabel <- c("sugar maple", "apple-buckthorn","spruce plantation","apple-buckthorn",
+                "buckthorn", "norway maple-sugar maple-buckthorn")
 
 ggplot(lidarLDF, aes(x=Plot, y=LAI, fill=Plot))+
   geom_boxplot()+
   xlab("Forest inventory plot")+
   ylab(expression(paste("Leaf area index (m"^2,""[leaf], " m"^-2,""[ground],")")))+
   scale_fill_manual(values=colorLi,
-                    labels=namesPLi)+theme_classic()+labs(fill="Dominant species composition")+ theme(text = element_text(size = 15)) 
+                    labels=NamesLabel)+theme_classic()+
+  labs(fill="Dominant species composition")+
+  theme(text = element_text(size = 18),axis.text.x = element_blank())+
 
 
 
@@ -526,7 +532,7 @@ ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
                              rgb(0,158,115,maxColorValue=255),
                              rgb(0,114,178,maxColorValue=255)))+ 
   labs(x="Canopy height",y="Density",fill="Dominant species composition", color="Dominant species composition")+
-  theme(text = element_text(size = 15))
+  theme(text = element_text(size = 18))
 
 
 
