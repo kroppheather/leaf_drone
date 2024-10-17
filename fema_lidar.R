@@ -472,7 +472,7 @@ lidarLDF <- lidarLDF %>%
 colorLi <- c(colP[1],#RG01
              colP[2],#RG03
              colP[3],#RG06
-             colP[4],#RG010
+             colP[2],#RG010
              colP[5],#RG14
              colP[6])#RG17
 
@@ -521,16 +521,21 @@ ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
   geom_ribbon(alpha=0.25)+
   geom_line(data=ladPlot,aes(x=height, y=lad, color=namesCommon), size=1)+
   theme_classic()+
-  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+  scale_fill_manual(values=c(
                              rgb(230,159,0,maxColorValue=255), #orange
-                             rgb(240,228,66,maxColorValue=255), # yellow
                              rgb(0,158,115,maxColorValue=255),
-                             rgb(0,114,178,maxColorValue=255)))+ #blue
-  scale_color_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                             rgb(0,114,178,maxColorValue=255),
+                             
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(204,121,167,maxColorValue=255) #reddish purple
+                             ))+ 
+   scale_color_manual(values=c(
                              rgb(230,159,0,maxColorValue=255), #orange
-                             rgb(240,228,66,maxColorValue=255), # yellow
                              rgb(0,158,115,maxColorValue=255),
-                             rgb(0,114,178,maxColorValue=255)))+ 
+                             rgb(0,114,178,maxColorValue=255),
+                             
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(204,121,167,maxColorValue=255)))+ 
   labs(x="Canopy height",y="Density",fill="Dominant species composition", color="Dominant species composition")+
   theme(text = element_text(size = 18))
 
