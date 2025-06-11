@@ -240,6 +240,8 @@ for(i in 1:length(plotsI)){
 }
 namecomp
 namePerc
+Ash <- PlotComp %>% filter(Genus == "Fraxinus")
+
 
 nameDF <- data.frame(Plot = plotsI, Names = namecomp, namePerc=namePerc)
 
