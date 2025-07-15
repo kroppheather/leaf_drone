@@ -183,6 +183,11 @@ canopyPlot <- canopyLAI %>%
 SpeciesInfo <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/speciesID.csv")
 forestInventory <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data.csv")
 
+AshPlots <- forestInventory %>%
+  filter(Species == "FRAM" | Species == "FRPE")
+AshPlot <- unique(data.frame(Plot=AshPlots$Plot))
+  
+
 RG17 <- forestInventory %>%
   filter(Plot == "RG17")
 forestInventory$tree_area.cm2 <- (((forestInventory$DBH.cm / 2)^2) * pi/10000) 
