@@ -10,3 +10,5 @@ AshPlots <- forestInventory %>%
 AshPlots$plotID <- as.numeric(gsub("RG","", AshPlots$Plot))
 AshPlotsF <- AshPlots %>%
   arrange(plotID)
+
+write.csv(AshPlotsF, "K:/Environmental_Studies/hkropp/Private/canopy/ash survey sheet.csv")
