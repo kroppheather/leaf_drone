@@ -15,3 +15,5 @@ AshPlotsL <- AshPlots %>%
   filter(Dead == "N")
 
 write.csv(AshPlotsF, "K:/Environmental_Studies/hkropp/Private/canopy/ash survey sheet.csv")
+
+RG19 <- forestInventory %>% filter(Plot == "RG19")
