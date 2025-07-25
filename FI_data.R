@@ -17,3 +17,9 @@ AshPlotsL <- AshPlots %>%
 write.csv(AshPlotsF, "K:/Environmental_Studies/hkropp/Private/canopy/ash survey sheet.csv")
 
 RG19 <- forestInventory %>% filter(Plot == "RG19")
+
+forestInventory25 <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 25.csv")
+unique(forestInventory25$Dead)
+inventory <- forestInventory25 %>%
+  filter(Dead == "N")
+write.csv(inventory,  "K:/Environmental_Studies/hkropp/Private/canopy/inv_25_for_qa.csv")
