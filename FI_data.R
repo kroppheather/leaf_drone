@@ -2,7 +2,7 @@ library(dplyr)
 
 
 SpeciesInfo <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/speciesID.csv")
-forestInventory <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 24.csv")
+forestInventory <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 7_25_25.csv")
 
 AshPlots <- forestInventory %>%
   filter(Species == "FRAM" | Species == "FRPE")
@@ -15,10 +15,17 @@ AshPlotsL <- AshPlots %>%
   filter(Dead == "N")
 
 write.csv(AshPlotsF, "K:/Environmental_Studies/hkropp/Private/canopy/ash survey sheet.csv")
+maplePlots <- forestInventory %>%
+  filter(Species == "ACSA" & Dead =="N"& DBH.cm >5 )
+
+mapleCount <- maplePlots %>%
+  group_by(Plot) %>%
+  summarize(n_maple = n())
+
 
 RG19 <- forestInventory %>% filter(Plot == "RG19")
 
-forestInventory25 <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 25.csv")
+forestInventory25 <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 7_25.csv")
 unique(forestInventory25$Dead)
 inventory <- forestInventory25 %>%
   filter(Dead == "N")
