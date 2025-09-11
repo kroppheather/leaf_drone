@@ -28,5 +28,9 @@ RG19 <- forestInventory %>% filter(Plot == "RG19")
 forestInventory25 <- read.csv("K:/Environmental_Studies/hkropp/Private/canopy/HCEF forest inventory data 7_25.csv")
 unique(forestInventory25$Dead)
 inventory <- forestInventory25 %>%
-  filter(Dead == "N")
+  filter(Dead_1 == "N")
+plt_11  <- inventory %>%
+  filter(Plot == "RG11")
+plt_12  <- inventory %>%
+  filter(Plot == "RG12")
 write.csv(inventory,  "K:/Environmental_Studies/hkropp/Private/canopy/inv_25_for_qa.csv")
