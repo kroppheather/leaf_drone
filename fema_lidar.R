@@ -547,4 +547,47 @@ ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
   theme(text = element_text(size = 18))
 
 
+# LAD plots for Pete
+
+buckNames <- data.frame(plotID=c("RG01","RG02","RG03","RG06","RG07","RG08","RG09","RG11","RG12",
+                                 "RG13","RG15","RG16","RG17","RG18","RG19"),
+                                 Name=c(
+
+ladPlot <- inner_join(ladAll, namesLAI, by=c("plotID"="Plot"))
+
+
+ggplot(ladPlot, aes(x=height, y=lad, color=namesCommon))+
+  geom_line(size=2)+
+  theme_classic()+
+  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
+                             rgb(230,159,0,maxColorValue=255), #orange
+                             rgb(240,228,66,maxColorValue=255), # yellow
+                             rgb(0,158,115,maxColorValue=255),
+                             rgb(0,114,178,maxColorValue=255))) #blue
+
+ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
+                    color=namesCommon))+
+  geom_ribbon(alpha=0.25)+
+  geom_line(data=ladPlot,aes(x=height, y=lad, color=namesCommon), size=1)+
+  theme_classic()+
+  scale_fill_manual(values=c(
+    rgb(230,159,0,maxColorValue=255), #orange
+    rgb(0,158,115,maxColorValue=255),
+    rgb(0,114,178,maxColorValue=255),
+    
+    rgb(240,228,66,maxColorValue=255), # yellow
+    rgb(204,121,167,maxColorValue=255) #reddish purple
+  ))+ 
+  scale_color_manual(values=c(
+    rgb(230,159,0,maxColorValue=255), #orange
+    rgb(0,158,115,maxColorValue=255),
+    rgb(0,114,178,maxColorValue=255),
+    
+    rgb(240,228,66,maxColorValue=255), # yellow
+    rgb(204,121,167,maxColorValue=255)))+ 
+  labs(x="Canopy height",y="Density",fill="Dominant species composition", color="Dominant species composition")+
+  theme(text = element_text(size = 18))
+
+
+
 
