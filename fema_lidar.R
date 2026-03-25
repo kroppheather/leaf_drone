@@ -551,43 +551,29 @@ ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
 
 buckNames <- data.frame(plotID=c("RG01","RG02","RG03","RG06","RG07","RG08","RG09","RG11","RG12",
                                  "RG13","RG15","RG16","RG17","RG18","RG19"),
-                                 Name=c(
+                                 name=c("Forest","Buckthorn","Buckthorn","Forest","Forest","Forest",
+                                        "Forest","Forest","Forest","Forest","Forest","Forest","Forest","Forest","Forest"))
 
-ladPlot <- inner_join(ladAll, namesLAI, by=c("plotID"="Plot"))
+ladPlot <- inner_join(ladAll, buckNames, by=c("plotID"))
 
+# calculate new density by plot
+tot_ladForest <- ladPlot %>%
+  group_by(name) %>%
+  summarize(totDens = sum(lad))
 
-ggplot(ladPlot, aes(x=height, y=lad, color=namesCommon))+
-  geom_line(size=2)+
-  theme_classic()+
-  scale_fill_manual(values=c(rgb(204,121,167,maxColorValue=255), #reddish purple
-                             rgb(230,159,0,maxColorValue=255), #orange
-                             rgb(240,228,66,maxColorValue=255), # yellow
-                             rgb(0,158,115,maxColorValue=255),
-                             rgb(0,114,178,maxColorValue=255))) #blue
+ladForest <- ladPlot %>%
+  group_by(name, height) %>%
+  summarize(Dens = sum(lad))
 
-ggplot(ladPlot, aes(x=height, ymax=lad, ymin=0, fill=namesCommon,
-                    color=namesCommon))+
+ladPlots <- left_join(ladForest, tot_ladForest, by="name")
+ladPlots$rel_dens <- ladPlots$Dens/ladPlots$totDens
+
+ggplot(ladPlots , aes(x=height, ymax=rel_dens, ymin=0, fill=name))+
   geom_ribbon(alpha=0.25)+
-  geom_line(data=ladPlot,aes(x=height, y=lad, color=namesCommon), size=1)+
-  theme_classic()+
-  scale_fill_manual(values=c(
-    rgb(230,159,0,maxColorValue=255), #orange
-    rgb(0,158,115,maxColorValue=255),
-    rgb(0,114,178,maxColorValue=255),
-    
-    rgb(240,228,66,maxColorValue=255), # yellow
-    rgb(204,121,167,maxColorValue=255) #reddish purple
-  ))+ 
-  scale_color_manual(values=c(
-    rgb(230,159,0,maxColorValue=255), #orange
-    rgb(0,158,115,maxColorValue=255),
-    rgb(0,114,178,maxColorValue=255),
-    
-    rgb(240,228,66,maxColorValue=255), # yellow
-    rgb(204,121,167,maxColorValue=255)))+ 
-  labs(x="Canopy height",y="Density",fill="Dominant species composition", color="Dominant species composition")+
-  theme(text = element_text(size = 18))
-
-
-
-
+  geom_line(data=ladPlots,aes(x=height, y=rel_dens, color=name), size=1.25)+
+  theme_classic(base_size=18)+
+  scale_fill_manual(values=c("#A9927D", #buckthorn
+                             "#32533D"))+ #forest+
+scale_color_manual(values=c("#A9927D", #buckthorn
+                           "#32533D"))+
+  labs(x="Canopy height (m)", y="Relative frequency")
